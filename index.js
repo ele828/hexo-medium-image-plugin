@@ -44,7 +44,7 @@ const convertImages = (imgs, root, dest) =>
   Promise.all(imgs.map(img => convertImage(img, root, dest)))
 
 const walk = (curpath) => co(function* () {
-  let fileArray = [], files
+  let files, fileArray = []
   
   try {
     files = yield readDir(curpath)
