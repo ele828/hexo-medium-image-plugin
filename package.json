@@ -1,6 +1,6 @@
 {
   "name": "hexo-medium-image-plugin",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A medium-like image plugin for hexo",
   "main": "index.js",
   "scripts": {
