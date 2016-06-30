@@ -69,7 +69,7 @@ const difference = ([a, b]) =>
 /**
  * Filter if a's element is in b
  */
-const diffObjectArrary= (a, b) => {
+const diffObjectArray= (a, b) => {
   let ret = [];
   for (let i = 0; i < a.length; i++ ) {
     let found = false;
