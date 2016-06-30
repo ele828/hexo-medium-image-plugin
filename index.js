@@ -63,7 +63,7 @@ const walk = (curpath) => co(
 
 const root_path = 'images'
 const plugin_path = 'medium-plugin'
-const thumbnail_path = path.join(plugin_path, 'thumbnails');
+const thumbnail_path = path.join(plugin_path, 'thumbnails')
 
 const fns = [walk(root_path).then(filterImage).then(ps => filterPath(ps, root_path)),
   walk(thumbnail_path).then(filterImage).then(ps => filterPath(ps, thumbnail_path))]
