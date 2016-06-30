@@ -192,23 +192,23 @@ const transformHTML = (source, thumbInfo, thumbDir, imgDir, max_width) =>
 )
 
 const mediumImagePlugin = (source) => co(function *() {
-    const base_dir = hexo.base_dir
-    const img_path = hexo.config.medium_image_plugin.image_path || 'img'
-    const max_width = hexo.config.medium_image_plugin.max_width
-    const root_path = path.join(base_dir, 'source', img_path)
-    const plugin_path = path.join(base_dir, 'public', 'medium-image-plugin')
-    const thumbnail_path = path.join(plugin_path, 'thumbnails')
+  const base_dir = hexo.base_dir
+  const img_path = hexo.config.medium_image_plugin.image_path || 'img'
+  const max_width = hexo.config.medium_image_plugin.max_width
+  const root_path = path.join(base_dir, 'source', img_path)
+  const plugin_path = path.join(base_dir, 'public', 'medium-image-plugin')
+  const thumbnail_path = path.join(plugin_path, 'thumbnails')
 
-    const info = yield generateThumbs(root_path, thumbnail_path)
-    const thumbInfo = yield appendFileAsJsonArray(path.join(plugin_path, 'thumbnails.json'), info)
+  const info = yield generateThumbs(root_path, thumbnail_path)
+  const thumbInfo = yield appendFileAsJsonArray(path.join(plugin_path, 'thumbnails.json'), info)
 
-    // Asynchronous operation
-    copyAssets(base_dir, plugin_path)
-    source = importAssets(source)
+  // Asynchronous operation
+  copyAssets(base_dir, plugin_path)
+  source = importAssets(source)
 
-    source = transformHTML(source, thumbInfo, thumbnail_path, img_path, max_width)
+  source = transformHTML(source, thumbInfo, thumbnail_path, img_path, max_width)
 
-    return source
+  return source
 })
 
 // Adjust html structure
