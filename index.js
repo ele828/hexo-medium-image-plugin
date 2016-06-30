@@ -29,15 +29,19 @@ const difference = ([a, b]) =>
 const mkdir = (dpath) => new Promise((resolve, reject) =>
   mkdirp(path.dirname(dpath), (err) => err? reject(err): resolve(dpath)))
 
-const convertImage = (img, root, dest) => mkdir(path.join(dest, img)).then((dpath) =>
-    new Promise((resolve, reject) => 
-      gm(path.join(root, img)).scale(20, 20).quality(10).noProfile()
-        .write(dpath, (err) =>
-          err? reject(err) : resolve()
-        )))
+const getImageSize = (gm) => new Promise((resolve, reject) =>
+  gm.size((err, size) => err? reject(err): resolve(size)))
 
-const convertImages = (imgs, root, dest) => new Promise((resolve, reject) =>
-  Promise.all(imgs.map(img => convertImage(img, root, dest))))
+const convertImage = (img, root, dest) =>
+  mkdir(path.join(dest, img)).then((dpath) =>
+    Promise.resolve( gm(path.join(root, img)).scale(20, 20).quality(10).noProfile() )
+      .then((gm) => getImageSize(gm).then((size) =>
+        new Promise((resolve, reject) =>
+          gm.write(dpath, (err) => !err? resolve({path: dpath, size: size}): reject(err)))
+      )))
+
+const convertImages = (imgs, root, dest) =>
+  Promise.all(imgs.map(img => convertImage(img, root, dest)))
 
 const walk = (curpath) => co(
   function *() {
@@ -70,4 +74,7 @@ const fns = [walk(root_path).then(filterImage).then(ps => filterPath(ps, root_pa
 
 Promise.all(fns).then(difference)
   .then(imgs => convertImages(imgs, root_path, thumbnail_path))
+  .then((sizes) => {
+    console.log(sizes)
+  })
   .catch(err => console.error(err))
