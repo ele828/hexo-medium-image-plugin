@@ -175,7 +175,7 @@ const transformHTML = (source, thumbInfo, thumbDir, imgDir, max_width) =>
           height = info.size.height
           // Image too large, scale by ratio
           if (width > max_width) {
-            const ratio = max_width / width
+            const ratio = width / max_width
             width = width / ratio
             height = height / ratio
           }
