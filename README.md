@@ -33,4 +33,8 @@ And then, re-generator all pages.
 hexo g
 ```
 
+## Todo
+[ ] Scroll Listener
+[ ] Image Magnifier
+
 Done!
