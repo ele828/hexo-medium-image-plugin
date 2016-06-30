@@ -34,7 +34,7 @@ hexo g
 ```
 
 ## Todo
-[ ] Scroll Listener
-[ ] Image Magnifier
+- [ ] Scroll Listener
+- [ ] Image Magnifier
 
 Done!
