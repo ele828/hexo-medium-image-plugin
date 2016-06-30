@@ -49,7 +49,7 @@ const walk = (curpath) => co(function* () {
   try {
     files = yield readDir(curpath)
   } catch(e) {
-    // mkdir cannot judge `a/b` as folder
+    // lib `mkdirp` cannot judge `a/b` as folder
     yield mkdir(curpath + '/.')
     files = yield readDir(curpath)
   }
