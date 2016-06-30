@@ -1,5 +1,6 @@
 const fs = require('fs')
 const path = require('path')
+const mkdirp = require('mkdirp')
 
 const co = require('co')
 const gm = require('gm')
@@ -25,6 +26,21 @@ const filterPath = (paths, root) => paths.map((p) => p.replace(root, ''))
 const difference = ([a, b]) => 
   a.filter(v => !(b.indexOf(v) > -1)).concat(b.filter((v) => !(a.indexOf(v) > -1)))
 
+const mkdir = (p) => new Promise((resolve, reject) => {
+  console.log(path.dirname(p))
+  mkdirp(path.dirname(p), (err) => err? reject(err): resolve(p))
+})
+
+const convertImage = (img, root, dest) => mkdir(path.join(dest, img)).then((dpath) =>
+    new Promise((resolve, reject) => 
+      gm(path.join(root, img)).scale(20, 20).quality(10).noProfile()
+        .write(dpath, (err) =>
+          err? reject(err) : resolve()
+        )))
+
+const convertImages = (imgs, root, dest) => new Promise((resolve, reject) =>
+  Promise.all(imgs.map(img => convertImage(img, root, dest))))
+
 const walk = (curpath) => co(
   function *() {
     let fileArray = []
@@ -43,15 +59,6 @@ const walk = (curpath) => co(
     return fileArray
   })
 
-const convertImage = (img, root, dest) => new Promise((resolve, reject) =>
-  gm(path.join(root, img)).scale(20, 20).quality(10).noProfile()
-    .write(path.join(dest, img), (err) =>
-      err? reject(err) : resolve()
-    ))
-
-const convertImages = (imgs, root, dest) => new Promise((resolve, reject) =>
-  Promise.all(imgs.map(img => convertImage(img, root, dest))))
-
 /**
  * Stat image files in image folder
  */
@@ -60,9 +67,8 @@ const root_path = 'images'
 const plugin_path = 'medium-plugin'
 const thumbnail_path = path.join(plugin_path, 'thumbnails');
 
-const fns =
-  [ walk(root_path).then(filterImage).then(ps => filterPath(ps, root_path)),
-    walk(thumbnail_path).then(filterImage).then(ps => filterPath(ps, thumbnail_path)) ]
+const fns = [walk(root_path).then(filterImage).then(ps => filterPath(ps, root_path)),
+  walk(thumbnail_path).then(filterImage).then(ps => filterPath(ps, thumbnail_path))]
 
 Promise.all(fns).then(difference)
   .then(imgs => convertImages(imgs, root_path, thumbnail_path))
