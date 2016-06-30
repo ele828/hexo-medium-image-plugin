@@ -1,6 +1,10 @@
 # hexo-medium-image-plugin
 A medium-like image plugin
 
+## Demo
+
+http://www.dobest.me
+
 ## Install
 
 ```
