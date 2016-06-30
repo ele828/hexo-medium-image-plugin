@@ -1,12 +1,12 @@
 {
   "name": "hexo-medium-image-plugin",
   "version": "1.0.0",
-  "description": "",
+  "description": "A medium-like image plugin for hexo",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Eric Wong",
   "license": "ISC",
   "dependencies": {
     "co": "^4.6.0",

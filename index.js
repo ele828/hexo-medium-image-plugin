@@ -5,7 +5,7 @@ const path   = require('path')
 const mkdirp = require('mkdirp')
 
 const log    = require('hexo-log')({
-  debug: true,
+  debug: false,
   silent: false
 });
 
@@ -160,10 +160,8 @@ const importAssets = (src) =>
 /**
  * Transform HTML to specified format
  */
-const transformHTML = (source, thumbInfo, thumbDir, imgDir) =>
-
+const transformHTML = (source, thumbInfo, thumbDir, imgDir, max_width) =>
   source.replace(/<img([^>]+)?>/igm, (s, attr) => {
-
     let width, height, img_url
     attr = attr.replace(/src="([^"]+)?"/, (s, img) => {
       log.debug(img)
@@ -175,6 +173,12 @@ const transformHTML = (source, thumbInfo, thumbDir, imgDir) =>
         if (info.path.indexOf(img_url) != -1) {
           width = info.size.width
           height = info.size.height
+          // Image too large, scale by ratio
+          if (width > max_width) {
+            const ratio = max_width / width
+            width = width / ratio
+            height = height / ratio
+          }
           log.debug(width, height)
         }
       })
@@ -190,6 +194,7 @@ const transformHTML = (source, thumbInfo, thumbDir, imgDir) =>
 const mediumImagePlugin = (source) => co(function *() {
     const base_dir = hexo.base_dir
     const img_path = hexo.config.medium_image_plugin.image_path || 'img'
+    const max_width = hexo.config.medium_image_plugin.max_width
     const root_path = path.join(base_dir, 'source', img_path)
     const plugin_path = path.join(base_dir, 'public', 'medium-image-plugin')
     const thumbnail_path = path.join(plugin_path, 'thumbnails')
@@ -201,7 +206,7 @@ const mediumImagePlugin = (source) => co(function *() {
     copyAssets(base_dir, plugin_path)
     source = importAssets(source)
 
-    source = transformHTML(source, thumbInfo, thumbnail_path, img_path)
+    source = transformHTML(source, thumbInfo, thumbnail_path, img_path, max_width)
 
     return source
 })

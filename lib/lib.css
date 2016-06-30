@@ -20,6 +20,10 @@ img.loaded {
 	opacity: 1;
 }
 
+img.faded {
+	opacity: 0;
+}
+
 .img-small {
 	width: 100%;
 	height: 100%;

@@ -13,4 +13,5 @@ Specify your static image path.
 ```yaml
 medium_image_plugin:
     image_path: 'img'
+    max_width: 680 
 ```
