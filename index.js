@@ -24,12 +24,10 @@ const filterImage = files => files.filter(isImageFile)
 const filterPath = (paths, root) => paths.map((p) => p.replace(root, ''))
 
 const difference = ([a, b]) => 
-  a.filter(v => !(b.indexOf(v) > -1)).concat(b.filter((v) => !(a.indexOf(v) > -1)))
+  a.filter(v => b.indexOf(v) < 0).concat(b.filter((v) => a.indexOf(v) < 0))
 
-const mkdir = (p) => new Promise((resolve, reject) => {
-  console.log(path.dirname(p))
-  mkdirp(path.dirname(p), (err) => err? reject(err): resolve(p))
-})
+const mkdir = (dpath) => new Promise((resolve, reject) =>
+  mkdirp(path.dirname(dpath), (err) => err? reject(err): resolve(dpath)))
 
 const convertImage = (img, root, dest) => mkdir(path.join(dest, img)).then((dpath) =>
     new Promise((resolve, reject) => 
@@ -60,7 +58,7 @@ const walk = (curpath) => co(
   })
 
 /**
- * Stat image files in image folder
+ * Stats image files in image folder
  */
 
 const root_path = 'images'
