@@ -58,12 +58,9 @@ const walk = (curpath) => co(function* () {
   let stats = yield statFiles(file_paths)
   for (let i = 0; i < stats.length; i++) {
     const file_path = path.join(curpath, files[i])
-    if (stats[i].isDirectory()) {
+    if (stats[i].isDirectory())
       fileArray = fileArray.concat(yield walk(file_path))
-    }
-    else {
-      fileArray.push(file_path)
-    }
+    else fileArray.push(file_path)
   }
   return fileArray
 })
