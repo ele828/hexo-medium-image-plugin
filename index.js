@@ -43,38 +43,49 @@ const convertImage = (img, root, dest) =>
 const convertImages = (imgs, root, dest) =>
   Promise.all(imgs.map(img => convertImage(img, root, dest)))
 
-const walk = (curpath) => co(
-  function *() {
-    let fileArray = []
-    let files = yield readDir(curpath)
-    let file_paths = files.map((f) => path.join(curpath, f))
-    let stats = yield statFiles(file_paths)
-    for (let i = 0; i < stats.length; i++) {
-      const file_path = path.join(curpath, files[i])
-      if (stats[i].isDirectory()) {
-        fileArray = fileArray.concat(yield walk(file_path))
-      }
-      else {
-        fileArray.push(file_path)
-      }
+const walk = (curpath) => co(function* () {
+  let fileArray = [], files
+  
+  try {
+    files = yield readDir(curpath)
+  } catch(e) {
+    // mkdir cannot judge `a/b` as folder
+    yield mkdir(curpath + '/.')
+    files = yield readDir(curpath)
+  }
+
+  let file_paths = files.map((f) => path.join(curpath, f))
+  let stats = yield statFiles(file_paths)
+  for (let i = 0; i < stats.length; i++) {
+    const file_path = path.join(curpath, files[i])
+    if (stats[i].isDirectory()) {
+      fileArray = fileArray.concat(yield walk(file_path))
     }
-    return fileArray
-  })
+    else {
+      fileArray.push(file_path)
+    }
+  }
+  return fileArray
+})
 
 /**
  * Stats image files in image folder
  */
 
-const root_path = 'images'
-const plugin_path = 'medium-plugin'
-const thumbnail_path = path.join(plugin_path, 'thumbnails')
+const App = () => co(function* () {
+  const root_path = 'images'
+  const plugin_path = 'medium-plugin'
+  const thumbnail_path = path.join(plugin_path, 'thumbnails')
 
-const fns = [walk(root_path).then(filterImage).then(ps => filterPath(ps, root_path)),
-  walk(thumbnail_path).then(filterImage).then(ps => filterPath(ps, thumbnail_path))]
+  const fns = [walk(root_path).then(filterImage).then(ps => filterPath(ps, root_path)),
+    walk(thumbnail_path).then(filterImage).then(ps => filterPath(ps, thumbnail_path))]
 
-Promise.all(fns).then(difference)
-  .then(imgs => convertImages(imgs, root_path, thumbnail_path))
-  .then((sizes) => {
-    console.log(sizes)
-  })
-  .catch(err => console.error(err))
+  const retval   = yield Promise.all(fns)
+  const diffImgs = yield difference(retval)
+  const info     = yield convertImages(diffImgs, root_path, thumbnail_path)
+
+  console.log(info)
+  
+})
+
+App()
