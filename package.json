@@ -1,5 +1,5 @@
 {
-  "name": "medium-image-plugin",
+  "name": "hexo-medium-image-plugin",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
