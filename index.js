@@ -208,7 +208,6 @@ const mediumImagePlugin = (source) => co(function *() {
   // Asynchronous operation
   copyAssets(base_dir, plugin_path)
   source = importAssets(source)
-
   source = transformHTML(source, thumbInfo, thumbnail_path, img_path, max_width)
 
   return source
