@@ -161,6 +161,9 @@ const importAssets = (src) =>
  */
 const transformHTML = (source, thumbInfo, thumbDir, imgDir, max_width) => {
   const img_tpl = `src="/medium-image-plugin/thumbnails${img_url}"`
+  const figure_tpl = `<figure class="banner" style="width:${width}px; height:${height}px;margin: 0 auto;">
+                        <img${attr} class="img-small" data-large="/img${img_url}">
+                      </figure>`
 
   source.replace(/<img([^>]+)?>/igm, (s, attr) => {
     let width, height, img_url
@@ -183,7 +186,7 @@ const transformHTML = (source, thumbInfo, thumbDir, imgDir, max_width) => {
           log.debug(width, height)
         }
       })
-      return 
+      return figure_tpl
     })
 
     return `<figure class="banner" style="width:${width}px; height:${height}px;margin: 0 auto;">
