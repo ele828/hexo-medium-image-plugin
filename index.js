@@ -90,7 +90,7 @@ const appendFileAsJsonArray = (path, content) => existFile(path).then((exists) =
         try {
           prevContent = JSON.parse(prevContent)
           // Assure saved only once
-          const contentArray = [...prevContent, ...diffObjectArrary(content, prevContent)] 
+          const contentArray = [...prevContent, ...diffObjectArray(content, prevContent)] 
           content = JSON.stringify(contentArray)
 
           return writeFile(path, content)
