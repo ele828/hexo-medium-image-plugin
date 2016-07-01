@@ -159,12 +159,7 @@ const importAssets = (src) =>
 /**
  * Transform HTML to specified format
  */
-const transformHTML = (source, thumbInfo, thumbDir, imgDir, max_width) => {
-  const img_tpl = `src="/medium-image-plugin/thumbnails${img_url}"`
-  const figure_tpl = `<figure class="banner" style="width:${width}px; height:${height}px;margin: 0 auto;">
-                        <img${attr} class="img-small" data-large="/img${img_url}">
-                      </figure>`
-
+const transformHTML = (source, thumbInfo, thumbDir, imgDir, max_width) =>
   source.replace(/<img([^>]+)?>/igm, (s, attr) => {
     let width, height, img_url
     attr = attr.replace(/src="([^"]+)?"/, (s, img) => {
@@ -186,13 +181,14 @@ const transformHTML = (source, thumbInfo, thumbDir, imgDir, max_width) => {
           log.debug(width, height)
         }
       })
-      return figure_tpl
+      return `src="/medium-image-plugin/thumbnails${img_url}"`
     })
 
     return `<figure class="banner" style="width:${width}px; height:${height}px;margin: 0 auto;">
       <img${attr} class="img-small" data-large="/img${img_url}">
       </figure>`
-  })}
+  }
+)
 
 const mediumImagePlugin = (source) => co(function *() {
   const base_dir = hexo.base_dir
