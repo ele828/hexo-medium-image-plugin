@@ -85,21 +85,20 @@ const diffObjectArray= (a, b) => {
 }
 
 const appendFileAsJsonArray = (path, content) => existFile(path).then((exists) =>
-  exists
-    ? readFile(path)
-        .then((prevContent) => {
-            try {
-              prevContent = JSON.parse(prevContent)
-              // Assure saved only once
-              const contentArray = [...prevContent, ...diffObjectArrary(content, prevContent)] 
-              content = JSON.stringify(contentArray)
+  exists? readFile(path)
+    .then((prevContent) => {
+        try {
+          prevContent = JSON.parse(prevContent)
+          // Assure saved only once
+          const contentArray = [...prevContent, ...diffObjectArrary(content, prevContent)] 
+          content = JSON.stringify(contentArray)
 
-              return writeFile(path, content)
-                .then(() => Promise.resolve(contentArray))
-            } catch(err) {
-              return Promise.reject(err)
-            }
-        })
+          return writeFile(path, content)
+            .then(() => Promise.resolve(contentArray))
+        } catch(err) {
+          return Promise.reject(err)
+        }
+    })
 
     // File is not exist
     : writeFile(path, JSON.stringify([])).then(() =>
@@ -160,7 +159,9 @@ const importAssets = (src) =>
 /**
  * Transform HTML to specified format
  */
-const transformHTML = (source, thumbInfo, thumbDir, imgDir, max_width) =>
+const transformHTML = (source, thumbInfo, thumbDir, imgDir, max_width) => {
+  const img_tpl = `src="/medium-image-plugin/thumbnails${img_url}"`
+
   source.replace(/<img([^>]+)?>/igm, (s, attr) => {
     let width, height, img_url
     attr = attr.replace(/src="([^"]+)?"/, (s, img) => {
@@ -182,14 +183,13 @@ const transformHTML = (source, thumbInfo, thumbDir, imgDir, max_width) =>
           log.debug(width, height)
         }
       })
-      return `src="/medium-image-plugin/thumbnails${img_url}"`
+      return 
     })
 
     return `<figure class="banner" style="width:${width}px; height:${height}px;margin: 0 auto;">
       <img${attr} class="img-small" data-large="/img${img_url}">
       </figure>`
-  }
-)
+  })}
 
 const mediumImagePlugin = (source) => co(function *() {
   const base_dir = hexo.base_dir
