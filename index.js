@@ -96,21 +96,20 @@ const diffObjectArray= (a, b) => {
   return ret;
 }
 
-const appendFileAsJsonArray = (path, content) => existFile(path).then((exists) =>
-  exists? readFile(path)
-    .then((prevContent) => {
-      prevContent = JSON.parse(prevContent)
-      // Assure saved only once
-      const contentArray = [...prevContent,
-          ...diffObjectArray(content, prevContent)] 
-      content = JSON.stringify(contentArray)
-      return writeFile(path, content)
-        .then(() => Promise.resolve(contentArray))
-    })
-
-    // File is not exist
-    : writeFile(path, JSON.stringify([])).then(() =>
-        appendFileAsJsonArray(path, content)))    // Try again
+const appendFileAsJsonArray = (path, content) => readFile(path)
+  .then((prevContent) => {
+    prevContent = JSON.parse(prevContent)
+    // Assure saved only once
+    const contentArray = [...prevContent,
+        ...diffObjectArray(content, prevContent)] 
+    content = JSON.stringify(contentArray)
+    return writeFile(path, content)
+      .then(() => Promise.resolve(contentArray))
+  }).catch(err => {
+    // Error, retry
+    return writeFile(path, JSON.stringify([])).then(() =>
+      appendFileAsJsonArray(path, content)) 
+  })
 
 const walk = (curpath) => co(function* () {
   let files, fileArray = []
