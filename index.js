@@ -4,8 +4,6 @@ const gm     = require('gm')
 const path   = require('path')
 const mkdirp = require('mkdirp')
 
-const log    = require('hexo-log')({ debug: false, silent: false });
-
 /**
  * Helper functions
  */
@@ -170,8 +168,6 @@ const transformHTML = (source, thumbInfo, thumbDir, imgDir, max_width) =>
   source.replace(/<img([^>]+)?>/igm, (s, attr) => {
     let width, height, img_url
     attr = attr.replace(/src="([^"]+)?"/, (s, img) => {
-      log.debug(img)
-      // log.debug(thumbInfo)
       thumbInfo.forEach((info) => {
         // Pick a thumbnail
         img_url = img.replace('/'+imgDir, '')
@@ -185,7 +181,6 @@ const transformHTML = (source, thumbInfo, thumbDir, imgDir, max_width) =>
             width = width / ratio
             height = height / ratio
           }
-          log.debug(width, height)
         }
       })
       return `src="/medium-image-plugin/thumbnails${img_url}"`
