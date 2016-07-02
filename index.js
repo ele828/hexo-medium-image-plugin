@@ -4,10 +4,7 @@ const gm     = require('gm')
 const path   = require('path')
 const mkdirp = require('mkdirp')
 
-const log    = require('hexo-log')({
-  debug: false,
-  silent: false
-});
+const log    = require('hexo-log')({ debug: false, silent: false });
 
 /**
  * Helper functions
@@ -87,17 +84,13 @@ const diffObjectArray= (a, b) => {
 const appendFileAsJsonArray = (path, content) => existFile(path).then((exists) =>
   exists? readFile(path)
     .then((prevContent) => {
-        try {
-          prevContent = JSON.parse(prevContent)
-          // Assure saved only once
-          const contentArray = [...prevContent, ...diffObjectArray(content, prevContent)] 
-          content = JSON.stringify(contentArray)
-
-          return writeFile(path, content)
-            .then(() => Promise.resolve(contentArray))
-        } catch(err) {
-          return Promise.reject(err)
-        }
+      prevContent = JSON.parse(prevContent)
+      // Assure saved only once
+      const contentArray = [...prevContent,
+          ...diffObjectArray(content, prevContent)] 
+      content = JSON.stringify(contentArray)
+      return writeFile(path, content)
+        .then(() => Promise.resolve(contentArray))
     })
 
     // File is not exist
