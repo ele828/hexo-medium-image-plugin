@@ -7,6 +7,8 @@ http://www.dobest.me
 
 ## Install
 
+Note: Node V6.0 or higher is requird.
+
 ```
 npm install hexo-medium-image-plugin --save
 ```
