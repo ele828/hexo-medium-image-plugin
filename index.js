@@ -49,9 +49,17 @@ const filterPath = (paths, root) => paths.map((p) => p.replace(root, ''))
 const getImageSize = (gm) => new Promise((resolve, reject) =>
   gm.size((err, size) => err? reject(err): resolve(size)))
 
+const GMConverter = (fileUri) =>
+  // if gif file, grab the first frame
+  Promise.resolve(
+    gm(fileUri.replace(/(.*).gif/igm, '.gif[0]'))
+      .scale(20, 20)
+      .quality(10)
+      .noProfile())
+
 const convertImage = (img, root, dest) =>
   mkdir(path.join(dest, img)).then((dpath) =>
-    Promise.resolve( gm(path.join(root, img)).scale(20, 20).quality(10).noProfile() )
+    GMConverter(path.join(root, img))
       .then((gm) => getImageSize(gm).then((size) =>
         new Promise((resolve, reject) =>
           gm.write(dpath, (err) => !err? resolve({path: dpath, size: size}): reject(err)))
