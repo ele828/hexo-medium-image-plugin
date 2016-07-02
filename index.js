@@ -40,6 +40,13 @@ const copyFileInExist = (origin, dest) =>
           copyFile(origin, dest))
     })
 
+// Throttle Promise.all execution
+const PromiseAllChunks = (p, l) => p.length <= l ? Promise.all(p)
+     : Promise.all([p.filter((_, i) => !(i % 2)),
+        p.filter((_, i) => i % 2)]
+         .map((e) => PromiseAllChunks(e, l)))
+           .then(([a, b]) => [...a, ...b])
+
 const isImageFile = file => /(.*)\/[\w|\s|.|-]+[.]+[\w]+$/.test(file)
 
 const filterImage = files => files.filter(isImageFile)
@@ -66,7 +73,7 @@ const convertImage = (img, root, dest) =>
       )))
 
 const convertImages = (imgs, root, dest) =>
-  Promise.all(imgs.map(img => convertImage(img, root, dest)))
+  PromiseAllChunks(imgs.map(img => convertImage(img, root, dest)), 3)
 
 const difference = ([a, b]) => 
   a.filter(v => b.indexOf(v) < 0).concat(b.filter(v => a.indexOf(v) < 0))
