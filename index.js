@@ -52,7 +52,7 @@ const getImageSize = (gm) => new Promise((resolve, reject) =>
 const GMConverter = (fileUri) =>
   // if gif file, grab the first frame
   Promise.resolve(
-    gm(fileUri.replace(/(.*).gif/igm, '.gif[0]'))
+    gm(fileUri.replace(/(.*).gif/igm, (s) => `${s}[0]`))
       .scale(20, 20)
       .quality(10)
       .noProfile())
