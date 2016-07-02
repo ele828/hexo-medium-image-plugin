@@ -1,5 +1,10 @@
 # hexo-medium-image-plugin
-A medium-like image plugin
+A medium-like image lazyload plugin, the images will be loaded right after it appears on the page 
+while scolling down, otherwise, it'll be presented in blur style. This plugin will only perform in post
+page, because I didn't know how to inject JavaScrip and CSS into `index.html`, if you know how to do it,
+plase let me know, I'd really appreciate it! This plugin will generate a `medium-image-plugin/` folder
+inside `public/` folder for storing thumbnails. If you still have any problem, let me know please!
+Hope it works for you!
 
 ## Demo
 
