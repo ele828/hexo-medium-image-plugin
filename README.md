@@ -20,12 +20,13 @@ npm install hexo-medium-image-plugin --save
 
 ## Config
 
-Specify your static image path.
+Specify your static image path in `_config.yml`.
 ```yaml
 medium_image_plugin:
     image_path: 'img'
     max_width: 680 
 ```
+`image_path` means where your images stored. `max_width` means the maximum of page width.
 
 ## Usage
 
