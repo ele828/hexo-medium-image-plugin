@@ -197,7 +197,7 @@ const transformHTML = (source, thumbInfo, thumbDir, imgDir, max_width) =>
   }
 )
 
-const mediumImagePlugin = (source) => co(function *() {
+const mediumImagePlugin = (data) => co(function *() {
   const base_dir = hexo.base_dir
   const img_path = hexo.config.medium_image_plugin.image_path || 'img'
   const max_width = hexo.config.medium_image_plugin.max_width
@@ -210,12 +210,11 @@ const mediumImagePlugin = (source) => co(function *() {
 
   // Asynchronous operation
   copyAssets(base_dir, plugin_path)
-  source = importAssets(source)
-  source = transformHTML(source, thumbInfo, thumbnail_path, img_path, max_width)
+  data.content = importAssets(data.content)
+  data.content = transformHTML(data.content, thumbInfo, thumbnail_path, img_path, max_width)
 
-  return source
+  return data
 })
 
 // Adjust html structure
-hexo.extend.filter.register('after_render:html', mediumImagePlugin)
-
+hexo.extend.filter.register('after_post_render', mediumImagePlugin)
