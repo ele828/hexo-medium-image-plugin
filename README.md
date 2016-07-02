@@ -34,7 +34,8 @@ hexo g
 ```
 
 ## Todo
-- [ ] Scroll Listener
+- [x] Scroll Listener
 - [ ] Image Magnifier
 
-Done!
+## License
+MIT
