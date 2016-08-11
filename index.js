@@ -25,14 +25,14 @@ const statFile = path => new Promise((resolve, reject) =>
 
 const statFiles = paths => Promise.all(paths.map(statFile))
 
-const mkdir = (dpath) => new Promise((resolve, reject) =>
-  mkdirp(path.dirname(dpath), (err) => err? reject(err): resolve(dpath)))
+const mkdir = dpath => new Promise((resolve, reject) =>
+  mkdirp(path.dirname(dpath), err => err? reject(err): resolve(dpath)))
 
 const copyFile = (origin, dest) => 
   fs.createReadStream(origin).pipe(fs.createWriteStream(dest))
 
 const copyFileInExist = (origin, dest) => 
-  existFile(dest).then((exists) => {
+  existFile(dest).then(exists => {
     exists? null
       : mkdir(dest).then(() =>
           copyFile(origin, dest))
@@ -51,13 +51,13 @@ const filterImage = files => files.filter(isImageFile)
 
 const filterPath = (paths, root) => paths.map((p) => p.replace(root, ''))
 
-const getImageSize = (gm) => new Promise((resolve, reject) =>
+const getImageSize = gm => new Promise((resolve, reject) =>
   gm.size((err, size) => err? reject(err): resolve(size)))
 
-const GMConverter = (fileUri) =>
+const GMConverter = fileUri =>
   // if gif file, grab the first frame
   Promise.resolve(
-    gm(fileUri.replace(/(.*).gif/igm, (s) => `${s}[0]`))
+    gm(fileUri.replace(/(.*).gif/igm, s => `${s}[0]`))
       .scale(20, 20)
       .quality(10)
       .noProfile())
@@ -67,7 +67,7 @@ const convertImage = (img, root, dest) =>
     GMConverter(path.join(root, img))
       .then((gm) => getImageSize(gm).then((size) =>
         new Promise((resolve, reject) =>
-          gm.write(dpath, (err) => !err? resolve({path: dpath, size: size}): reject(err)))
+          gm.write(dpath, err => !err? resolve({path: dpath, size: size}): reject(err)))
       )))
 
 const convertImages = (imgs, root, dest) =>
@@ -95,21 +95,21 @@ const diffObjectArray= (a, b) => {
 }
 
 const appendFileAsJsonArray = (path, content) => readFile(path)
-  .then((prevContent) => {
+  .then(prevContent => {
     prevContent = JSON.parse(prevContent)
     // Assure saved only once
     const contentArray = [...prevContent,
         ...diffObjectArray(content, prevContent)] 
     content = JSON.stringify(contentArray)
     return writeFile(path, content)
-      .then(() => Promise.resolve(contentArray))
+      .then(_ => Promise.resolve(contentArray))
   }).catch(err => {
     // Error, retry
-    return writeFile(path, JSON.stringify([])).then(() =>
+    return writeFile(path, JSON.stringify([])).then(_ =>
       appendFileAsJsonArray(path, content)) 
   })
 
-const walk = (curpath) => co(function* () {
+const walk = curpath => co(function* () {
   let files, fileArray = []
   
   try {
@@ -120,7 +120,7 @@ const walk = (curpath) => co(function* () {
     files = yield readDir(curpath)
   }
 
-  let file_paths = files.map((f) => path.join(curpath, f))
+  let file_paths = files.map(f => path.join(curpath, f))
   let stats = yield statFiles(file_paths)
   for (let i = 0; i < stats.length; i++) {
     const file_path = path.join(curpath, files[i])
@@ -147,8 +147,7 @@ const generateThumbs = (root_path, thumbnail_path) => co(function* () {
 })
 
 const copyAssets = (base_dir, plugin_path) => {
-  const libPath = path.join(
-    base_dir, 'node_modules', 'hexo-medium-image-plugin', 'lib')
+  const libPath = path.join(base_dir, 'node_modules', 'hexo-medium-image-plugin', 'lib')
 
   const js = path.join(libPath, 'lib.js')
   const style = path.join(libPath, 'lib.css')
@@ -168,19 +167,22 @@ const transformHTML = (source, thumbInfo, thumbDir, imgDir, max_width) =>
   source.replace(/<img([^>]+)?>/igm, (s, attr) => {
     let width, height, img_url
     attr = attr.replace(/src="([^"]+)?"/, (s, img) => {
-      thumbInfo.forEach((info) => {
+      thumbInfo.forEach(info => {
+
         // Pick a thumbnail
         img_url = img.replace('/'+imgDir, '')
         info.path = info.path.replace(thumbDir, '')
         if (info.path.indexOf(img_url) != -1) {
           width = info.size.width
           height = info.size.height
+
           // Image too large, scale by ratio
           if (width > max_width) {
             const ratio = width / max_width
             width = width / ratio
             height = height / ratio
           }
+
         }
       })
       return `src="/medium-image-plugin/thumbnails${img_url}"`
@@ -192,7 +194,7 @@ const transformHTML = (source, thumbInfo, thumbDir, imgDir, max_width) =>
   }
 )
 
-const mediumImagePlugin = (data) => co(function *() {
+const mediumImagePlugin = data => co(function *() {
   const base_dir = hexo.base_dir
   const img_path = hexo.config.medium_image_plugin.image_path || 'img'
   const max_width = hexo.config.medium_image_plugin.max_width
